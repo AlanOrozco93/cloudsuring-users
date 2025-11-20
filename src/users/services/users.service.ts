@@ -35,10 +35,7 @@ export function findAll(): IUser[]{
 export function findById(id: string): IUser{
     try {
         let userIndex = usersData.findIndex(user => user.id === id);
-
-        if(userIndex < 0){
-            throw new Error('User not found');
-        }
+        
         return usersData[userIndex];
     } catch (error: unknown) {
     if (error instanceof Error) {
@@ -91,9 +88,9 @@ export function relationshipDistance(idBaseUser: string, idTargetUser: string):s
        const userChecked = new Set<string>();
        const queue: { id: string, distance: number }[] = [{id: idBaseUser, distance: 0}];
 
-        while (queue.length > 0) {
+        while (queue.length > 0 ) {
             const { id, distance } = queue.shift()!;
-            if (id === idTargetUser) return `They are ${distance} people away`;
+            if (id === idTargetUser) return `It's a ${formatedGrade(distance)}-degree relationship`;
 
             userChecked.add(id);
 
@@ -114,4 +111,17 @@ export function relationshipDistance(idBaseUser: string, idTargetUser: string):s
     }
     throw new Error("Unknown error");
   }
+}
+
+function formatedGrade(grade: number): string {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = grade % 100;
+
+  if (v >= 11 && v <= 13) {
+      return `${grade}th`;
+  }
+  const lastDigit = grade % 10;
+  const suffix = suffixes[lastDigit] || "th";
+
+  return `${grade}${suffix}`;
 }

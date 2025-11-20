@@ -6,6 +6,14 @@ import { UpdateUserDto } from "../dtos/update-user.dto";
 
 const router = Router();
 
+router.get("/relationship-distance/:idBaseUser/:idTargetUser", (req: Request, res: Response) => {
+    const { idBaseUser, idTargetUser } = req.params;
+    res.status(200).json({ 
+        data: relationshipDistance(idBaseUser, idTargetUser),
+        message: "User obtained succesfully"
+    });
+});
+
 router.post("/", validateDto(CreateUserDto), (req: Request, res: Response) => {
     res.status(201).json({ 
         data: saveUsers(req.body),
@@ -14,17 +22,33 @@ router.post("/", validateDto(CreateUserDto), (req: Request, res: Response) => {
 });
 
 router.get("/", (req: Request, res: Response) => {
-    res.status(200).json({ 
-        data: findAll(),
-        message: "Users obtained succesfully"
+    const users = findAll();
+   if (!users || users.length === 0) {
+        return res.status(404).json({
+            data: [],
+            message: "No users found"
+        });
+    }
+
+    res.status(200).json({
+        data: users,
+        message: "Users obtained successfully"
     });
 });
 
 router.get("/:id", (req: Request, res: Response) => {
     const { id } = req.params;
-    res.status(200).json({ 
-        data: findById(id),
-        message: "User obtained succesfully"
+    const user = findById(id);
+    if (!user) {
+        return res.status(404).json({
+            data: [],
+            message: "User not found"
+        });
+    }
+
+    res.status(200).json({
+        data: user,
+        message: "User obtained successfully"
     });
 });
 
@@ -41,14 +65,6 @@ router.delete("/:id", (req: Request, res: Response) => {
     res.status(200).json({ 
         data: deleteUser(id),
         message: "User deleted succesfully"
-    });
-});
-
-router.get("/relationship-distance/:idBaseUser/:idTargetUser", (req: Request, res: Response) => {
-    const { idBaseUser, idTargetUser } = req.params;
-    res.status(200).json({ 
-        data: relationshipDistance(idBaseUser, idTargetUser),
-        message: "User obtained succesfully"
     });
 });
 
